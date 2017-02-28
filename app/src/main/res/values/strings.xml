@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Task54</string>
+
+    <string name="btn_first">First</string>
+    <string name="btn_second">Second</string>
+    <string name="btn_third">Third</string>
+    <string name="save_text">Save Text</string>
+    <string name="random_bg">Random BG</string>
 </resources>
