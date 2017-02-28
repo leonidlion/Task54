@@ -1,10 +1,16 @@
 package com.boost.leonid.task54;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+
+import com.boost.leonid.task54.fragments.host.FirstHostFragments;
+import com.boost.leonid.task54.fragments.host.SecondHostFragment;
+import com.boost.leonid.task54.fragments.host.ThirdHostFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -12,6 +18,9 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private FirstHostFragments mFirstHostFragments;
+    private SecondHostFragment mSecondHostFragment;
+    private ThirdHostFragment mThirdHostFragment;
 
     @BindView(R.id.main_frame)
     FrameLayout mFrameLayout;
@@ -45,15 +54,40 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
     }
 
-    private void onFirstClick() {
+    @Override
+    public void onBackPressed() {
+        if (mFirstHostFragments != null && !mFirstHostFragments.onBackPressed()){
+            super.onBackPressed();
+        }
+    }
 
+    private void onFirstClick() {
+        if (mFirstHostFragments == null)
+            mFirstHostFragments = new FirstHostFragments();
+        addOrReplaceFragment(mFirstHostFragments);
     }
 
     private void onSecondClick() {
-
+        if (mSecondHostFragment == null)
+            mSecondHostFragment = new SecondHostFragment();
+        addOrReplaceFragment(mSecondHostFragment);
     }
 
     private void onThirdClick() {
+        if (mThirdHostFragment == null)
+            mThirdHostFragment = new ThirdHostFragment();
+        addOrReplaceFragment(mThirdHostFragment);
+    }
 
+    private void addOrReplaceFragment(Fragment fragment){
+        if (mFrameLayout == null){
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.main_frame, fragment, fragment.getClass().getCanonicalName())
+                    .commit();
+        }else {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main_frame, fragment, fragment.getClass().getCanonicalName())
+                    .commit();
+        }
     }
 }
