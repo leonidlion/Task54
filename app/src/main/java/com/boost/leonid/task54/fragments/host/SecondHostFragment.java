@@ -8,17 +8,26 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.boost.leonid.task54.R;
+import com.boost.leonid.task54.fragments.SimpleFragment;
 
 /**
  * Created by leonid on 28.02.17.
  */
 
 public class SecondHostFragment extends Fragment {
+    private static final int LAYOUT = R.layout.fragment_second_host;
+    private static final String TAG = "SecondHostFragment";
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_second_host, container, false);
+        View view = inflater.inflate(LAYOUT, container, false);
+
+        getChildFragmentManager().beginTransaction()
+                .add(R.id.fl_second_host, new SimpleFragment(), SimpleFragment.class.getCanonicalName())
+                .commit();
 
         return view;
     }
+
 }

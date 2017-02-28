@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.boost.leonid.task54.BackPressedListener;
 import com.boost.leonid.task54.R;
 import com.boost.leonid.task54.fragments.adapter.SimplePagerAdapter;
 
@@ -25,12 +26,28 @@ public class FirstHostFragments extends Fragment {
     @BindView(R.id.vp_first_fragment)
     ViewPager mViewPager;
 
+    public FirstHostFragments(){}
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(LAYOUT, container, false);
         ButterKnife.bind(this, view);
-
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mPagerAdapter = new SimplePagerAdapter(getChildFragmentManager());
+        mViewPager.setAdapter(mPagerAdapter);
+    }
+
+    public boolean onBackPressed(){
+        BackPressedListener currentFragment = (BackPressedListener) mPagerAdapter.getSimpleFragments(mViewPager.getCurrentItem());
+        if (currentFragment != null) {
+            return currentFragment.onBackPressed();
+        }
+        return false;
     }
 }

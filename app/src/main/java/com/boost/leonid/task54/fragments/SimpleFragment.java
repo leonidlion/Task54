@@ -12,13 +12,14 @@ import android.widget.EditText;
 import com.boost.leonid.task54.R;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
  * Created by leonid on 28.02.17.
  */
 
-public class SimpleFragment extends Fragment {
+public class SimpleFragment extends RootFragment {
     private static final int LAYOUT = R.layout.fragment_simple;
     private static final String TAG = "SimpleFragment";
 
@@ -46,14 +47,17 @@ public class SimpleFragment extends Fragment {
     }
 
     private void onRandomBtnClick() {
-
+        getChildFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.fl_simple, new RandomBgFragment())
+                .commit();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(LAYOUT, container, false);
-
+        ButterKnife.bind(this, view);
         return view;
     }
 }
