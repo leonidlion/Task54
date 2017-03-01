@@ -2,6 +2,7 @@ package com.boost.leonid.task54;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick({R.id.btn_first_fragment, R.id.btn_second_fragment, R.id.btn_third_fragment})
     public void onClick(View view){
+        hideFragmentIfExists();
         switch (view.getId()){
             case R.id.btn_first_fragment:
                 onFirstClick();
@@ -62,32 +64,59 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onFirstClick() {
-        if (mFirstHostFragments == null)
+        if (mFirstHostFragments == null){
+            Log.d(TAG, "onFirstClick: new fragment");
             mFirstHostFragments = new FirstHostFragments();
-        addOrReplaceFragment(mFirstHostFragments);
+            addFragment(mFirstHostFragments);
+        }else {
+            showFragment(mFirstHostFragments);
+        }
     }
 
     private void onSecondClick() {
-        if (mSecondHostFragment == null)
+        if (mSecondHostFragment == null){
+            Log.d(TAG, "onSecondClick: new fragment");
             mSecondHostFragment = new SecondHostFragment();
-        addOrReplaceFragment(mSecondHostFragment);
+            addFragment(mSecondHostFragment);
+        }else {
+            showFragment(mSecondHostFragment);
+        }
     }
 
     private void onThirdClick() {
-        if (mThirdHostFragment == null)
+        if (mThirdHostFragment == null){
+            Log.d(TAG, "onThirdClick: new fragment");
             mThirdHostFragment = new ThirdHostFragment();
-        addOrReplaceFragment(mThirdHostFragment);
+            addFragment(mThirdHostFragment);
+        }else {
+            showFragment(mThirdHostFragment);
+        }
     }
 
-    private void addOrReplaceFragment(Fragment fragment){
-        if (mFrameLayout == null){
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.main_frame, fragment, fragment.getClass().getCanonicalName())
-                    .commit();
-        }else {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main_frame, fragment, fragment.getClass().getCanonicalName())
-                    .commit();
+    private void addFragment(Fragment fragment){
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.main_frame, fragment)
+                .commit();
+    }
+
+    private void hideFragmentIfExists(){
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        if (mFirstHostFragments != null){
+            transaction.hide(mFirstHostFragments);
         }
+        if (mSecondHostFragment != null){
+            transaction.hide(mSecondHostFragment);
+        }
+        if (mThirdHostFragment != null){
+            transaction.hide(mThirdHostFragment);
+        }
+        transaction.commit();
+    }
+
+    private void showFragment(Fragment fragment){
+        getSupportFragmentManager()
+                .beginTransaction()
+                .show(fragment)
+                .commit();
     }
 }
