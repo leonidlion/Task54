@@ -15,6 +15,9 @@ import com.roughike.bottombar.OnTabSelectListener;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private static final String KEY_FIRST_FRAGMENT = "KEY_FIRST_FRAGMENT";
+    private static final String KEY_SECOND_FRAGMENT = "KEY_SECOND_FRAGMENT";
+    private static final String KEY_THIRD_FRAGMENT = "KEY_THIRD_FRAGMENT";
     private FirstHostFragments mFirstHostFragments;
     private SecondHostFragment mSecondHostFragment;
     private ThirdHostFragment mThirdHostFragment;
@@ -24,6 +27,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (savedInstanceState != null){
+            Log.d(TAG, "onCreate: saved");
+            mFirstHostFragments = (FirstHostFragments) getSupportFragmentManager()
+                    .getFragment(savedInstanceState, KEY_FIRST_FRAGMENT);
+            mSecondHostFragment = (SecondHostFragment) getSupportFragmentManager()
+                    .getFragment(savedInstanceState, KEY_SECOND_FRAGMENT);
+            mThirdHostFragment = (ThirdHostFragment) getSupportFragmentManager()
+                    .getFragment(savedInstanceState, KEY_THIRD_FRAGMENT);
+        }
 
         mBottomBar = (BottomBar) findViewById(R.id.main_bottom_bar);
         mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
@@ -43,6 +56,19 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState: ");
+        if (mFirstHostFragments != null)
+            getSupportFragmentManager().putFragment(outState, KEY_FIRST_FRAGMENT, mFirstHostFragments);
+        if (mSecondHostFragment != null)
+            getSupportFragmentManager().putFragment(outState, KEY_SECOND_FRAGMENT, mSecondHostFragment);
+        if (mThirdHostFragment != null)
+            getSupportFragmentManager().putFragment(outState, KEY_THIRD_FRAGMENT, mThirdHostFragment);
+
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -108,18 +134,22 @@ public class MainActivity extends AppCompatActivity {
     private void hideFragmentIfExists(){
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if (mFirstHostFragments != null){
+            Log.d(TAG, "hideFragmentIfExists: first");
             transaction.hide(mFirstHostFragments);
         }
         if (mSecondHostFragment != null){
+            Log.d(TAG, "hideFragmentIfExists: second");
             transaction.hide(mSecondHostFragment);
         }
         if (mThirdHostFragment != null){
+            Log.d(TAG, "hideFragmentIfExists: third");
             transaction.hide(mThirdHostFragment);
         }
         transaction.commit();
     }
 
     private void showFragment(Fragment fragment){
+        Log.d(TAG, "showFragment: " + fragment.getClass().getCanonicalName());
         getSupportFragmentManager()
                 .beginTransaction()
                 .show(fragment)
