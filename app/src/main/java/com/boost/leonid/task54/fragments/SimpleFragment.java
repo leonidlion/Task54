@@ -47,7 +47,7 @@ public class SimpleFragment extends RootFragment {
 
     private void onRandomBtnClick() {
         getChildFragmentManager().beginTransaction()
-                .replace(R.id.fl_simple, new RandomBgFragment())
+                .replace(R.id.fl_simple, RandomBgFragment.newInstance(getChildFragmentManager().getBackStackEntryCount() + 1))
                 .addToBackStack(null)
                 .commit();
     }
