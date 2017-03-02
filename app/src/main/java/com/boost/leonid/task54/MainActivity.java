@@ -1,65 +1,71 @@
 package com.boost.leonid.task54;
 
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.FrameLayout;
 
 import com.boost.leonid.task54.fragments.host.FirstHostFragments;
 import com.boost.leonid.task54.fragments.host.SecondHostFragment;
 import com.boost.leonid.task54.fragments.host.ThirdHostFragment;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnTabSelectListener;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private FirstHostFragments mFirstHostFragments;
     private SecondHostFragment mSecondHostFragment;
     private ThirdHostFragment mThirdHostFragment;
-
-    @BindView(R.id.main_frame)
-    FrameLayout mFrameLayout;
-    @BindView(R.id.btn_first_fragment)
-    Button mFirstBtn;
-    @BindView(R.id.btn_second_fragment)
-    Button mSecondBtn;
-    @BindView(R.id.btn_third_fragment)
-    Button mThirdBtn;
-
-    @OnClick({R.id.btn_first_fragment, R.id.btn_second_fragment, R.id.btn_third_fragment})
-    public void onClick(View view){
-        hideFragmentIfExists();
-        switch (view.getId()){
-            case R.id.btn_first_fragment:
-                onFirstClick();
-                break;
-            case R.id.btn_second_fragment:
-                onSecondClick();
-                break;
-            case R.id.btn_third_fragment:
-                onThirdClick();
-                break;
-        }
-    }
+    private BottomBar mBottomBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ButterKnife.bind(this);
+        mBottomBar = (BottomBar) findViewById(R.id.main_bottom_bar);
+        mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelected(@IdRes int tabId) {
+                hideFragmentIfExists();
+                switch (tabId){
+                    case R.id.tab_first:
+                        onFirstClick();
+                        break;
+                    case R.id.tab_second:
+                        onSecondClick();
+                        break;
+                    case R.id.tab_third:
+                        onThirdClick();
+                        break;
+                }
+            }
+        });
     }
 
     @Override
     public void onBackPressed() {
-        if (mFirstHostFragments != null && !mFirstHostFragments.onBackPressed()){
-            super.onBackPressed();
+        switch (mBottomBar.getCurrentTabId()) {
+            case R.id.tab_first:
+                if (!mFirstHostFragments.onBackPressed()) {
+                    Log.d(TAG, "onBackPressed: first");
+                    super.onBackPressed();
+                }
+                break;
+            case R.id.tab_second:
+                if (!mSecondHostFragment.onBackPressed()) {
+                    Log.d(TAG, "onBackPressed: second");
+                    super.onBackPressed();
+                }
+                break;
+            case R.id.tab_third:
+                if (!mThirdHostFragment.onBackPressed()) {
+                    Log.d(TAG, "onBackPressed: third");
+                    super.onBackPressed();
+                }
+                break;
         }
     }
 

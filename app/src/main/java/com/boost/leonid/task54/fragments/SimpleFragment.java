@@ -2,7 +2,6 @@ package com.boost.leonid.task54.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,8 +47,8 @@ public class SimpleFragment extends RootFragment {
 
     private void onRandomBtnClick() {
         getChildFragmentManager().beginTransaction()
-                .addToBackStack(null)
                 .replace(R.id.fl_simple, new RandomBgFragment())
+                .addToBackStack(null)
                 .commit();
     }
 

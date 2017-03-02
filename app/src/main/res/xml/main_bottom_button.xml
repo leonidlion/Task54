@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <tabs>
+        <tab
+            id="@+id/tab_first"
+            barColorWhenSelected="#4ad2c0"
+            title="First" />
+        <tab
+            id="@+id/tab_second"
+            barColorWhenSelected="#8eb1ed"
+            title="Second" />
+        <tab
+            id="@+id/tab_third"
+            barColorWhenSelected="#9bed8e"
+            title="Third" />
+    </tabs>
