@@ -3,24 +3,26 @@ package com.boost.leonid.task54;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.boost.leonid.task54.fragments.SimpleFragment;
 import com.boost.leonid.task54.fragments.host.FirstHostFragments;
 import com.boost.leonid.task54.fragments.host.SecondHostFragment;
 import com.boost.leonid.task54.fragments.host.ThirdHostFragment;
+import com.ncapdevi.fragnav.FragNavController;
 import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements
+        FragNavController.RootFragmentListener,
+        SimpleFragment.FragmentNavigation{
     private static final String TAG = "MainActivity";
-    private static final String KEY_FIRST_FRAGMENT = "KEY_FIRST_FRAGMENT";
-    private static final String KEY_SECOND_FRAGMENT = "KEY_SECOND_FRAGMENT";
-    private static final String KEY_THIRD_FRAGMENT = "KEY_THIRD_FRAGMENT";
-    private FirstHostFragments mFirstHostFragments;
-    private SecondHostFragment mSecondHostFragment;
-    private ThirdHostFragment mThirdHostFragment;
+    private static final int INDEX_FIRST_HOST = FragNavController.TAB1;
+    private static final int INDEX_SECOND_HOST = FragNavController.TAB2;
+    private static final int INDEX_THIRD_HOST = FragNavController.TAB3;
+    private FragNavController mFragNavController;
     private BottomBar mBottomBar;
 
     @Override
@@ -28,21 +30,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState != null){
-            Log.d(TAG, "onCreate: saved");
-            mFirstHostFragments = (FirstHostFragments) getSupportFragmentManager()
-                    .getFragment(savedInstanceState, KEY_FIRST_FRAGMENT);
-            mSecondHostFragment = (SecondHostFragment) getSupportFragmentManager()
-                    .getFragment(savedInstanceState, KEY_SECOND_FRAGMENT);
-            mThirdHostFragment = (ThirdHostFragment) getSupportFragmentManager()
-                    .getFragment(savedInstanceState, KEY_THIRD_FRAGMENT);
-        }
+        initFragmentController(savedInstanceState);
 
+        initBottomBarButtons();
+    }
+
+    private void initFragmentController(Bundle savedInstanceState) {
+        mFragNavController = new FragNavController(
+                savedInstanceState,
+                getSupportFragmentManager(),
+                R.id.main_frame,
+                this,
+                3,
+                INDEX_FIRST_HOST);
+    }
+
+    private void initBottomBarButtons() {
         mBottomBar = (BottomBar) findViewById(R.id.main_bottom_bar);
         mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
-                hideFragmentIfExists();
                 switch (tabId){
                     case R.id.tab_first:
                         onFirstClick();
@@ -56,103 +63,63 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        mBottomBar.setOnTabReselectListener(new OnTabReselectListener() {
+            @Override
+            public void onTabReSelected(@IdRes int tabId) {
+                mFragNavController.clearStack();
+            }
+        });
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         Log.d(TAG, "onSaveInstanceState: ");
-        if (mFirstHostFragments != null)
-            getSupportFragmentManager().putFragment(outState, KEY_FIRST_FRAGMENT, mFirstHostFragments);
-        if (mSecondHostFragment != null)
-            getSupportFragmentManager().putFragment(outState, KEY_SECOND_FRAGMENT, mSecondHostFragment);
-        if (mThirdHostFragment != null)
-            getSupportFragmentManager().putFragment(outState, KEY_THIRD_FRAGMENT, mThirdHostFragment);
-
         super.onSaveInstanceState(outState);
+        if (mFragNavController != null){
+            mFragNavController.onSaveInstanceState(outState);
+        }
     }
 
     @Override
     public void onBackPressed() {
-        switch (mBottomBar.getCurrentTabId()) {
-            case R.id.tab_first:
-                if (!mFirstHostFragments.onBackPressed()) {
-                    Log.d(TAG, "onBackPressed: first");
-                    super.onBackPressed();
-                }
-                break;
-            case R.id.tab_second:
-                if (!mSecondHostFragment.onBackPressed()) {
-                    Log.d(TAG, "onBackPressed: second");
-                    super.onBackPressed();
-                }
-                break;
-            case R.id.tab_third:
-                if (!mThirdHostFragment.onBackPressed()) {
-                    Log.d(TAG, "onBackPressed: third");
-                    super.onBackPressed();
-                }
-                break;
+        if (!mFragNavController.isRootFragment()) {
+            mFragNavController.popFragment();
+        }else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public Fragment getRootFragment(int i) {
+        switch (i){
+            case INDEX_FIRST_HOST:
+                return new FirstHostFragments();
+            case INDEX_SECOND_HOST:
+                return new SecondHostFragment();
+            case INDEX_THIRD_HOST:
+                return new ThirdHostFragment();
+            default: return null;
         }
     }
 
     private void onFirstClick() {
-        if (mFirstHostFragments == null){
-            Log.d(TAG, "onFirstClick: new fragment");
-            mFirstHostFragments = new FirstHostFragments();
-            addFragment(mFirstHostFragments);
-        }else {
-            showFragment(mFirstHostFragments);
-        }
+        mFragNavController.switchTab(INDEX_FIRST_HOST);
     }
 
     private void onSecondClick() {
-        if (mSecondHostFragment == null){
-            Log.d(TAG, "onSecondClick: new fragment");
-            mSecondHostFragment = new SecondHostFragment();
-            addFragment(mSecondHostFragment);
-        }else {
-            showFragment(mSecondHostFragment);
-        }
+        mFragNavController.switchTab(INDEX_SECOND_HOST);
     }
 
     private void onThirdClick() {
-        if (mThirdHostFragment == null){
-            Log.d(TAG, "onThirdClick: new fragment");
-            mThirdHostFragment = new ThirdHostFragment();
-            addFragment(mThirdHostFragment);
-        }else {
-            showFragment(mThirdHostFragment);
-        }
+        mFragNavController.switchTab(INDEX_THIRD_HOST);
     }
 
-    private void addFragment(Fragment fragment){
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.main_frame, fragment)
-                .commit();
-    }
 
-    private void hideFragmentIfExists(){
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        if (mFirstHostFragments != null){
-            Log.d(TAG, "hideFragmentIfExists: first");
-            transaction.hide(mFirstHostFragments);
+    @Override
+    public void pushFragment(Fragment fragment) {
+        if (mFragNavController != null) {
+            Log.d(TAG, "pushFragment: ");
+            mFragNavController.pushFragment(fragment);
         }
-        if (mSecondHostFragment != null){
-            Log.d(TAG, "hideFragmentIfExists: second");
-            transaction.hide(mSecondHostFragment);
-        }
-        if (mThirdHostFragment != null){
-            Log.d(TAG, "hideFragmentIfExists: third");
-            transaction.hide(mThirdHostFragment);
-        }
-        transaction.commit();
-    }
-
-    private void showFragment(Fragment fragment){
-        Log.d(TAG, "showFragment: " + fragment.getClass().getCanonicalName());
-        getSupportFragmentManager()
-                .beginTransaction()
-                .show(fragment)
-                .commit();
     }
 }

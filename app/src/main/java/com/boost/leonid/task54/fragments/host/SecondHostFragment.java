@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.boost.leonid.task54.BackPressedListener;
 import com.boost.leonid.task54.R;
 import com.boost.leonid.task54.fragments.SimpleFragment;
 
@@ -30,16 +29,6 @@ public class SecondHostFragment extends Fragment {
         getChildFragmentManager().beginTransaction()
                 .add(R.id.fl_second_host, mSimpleFragment, SimpleFragment.class.getCanonicalName())
                 .commit();
-
         return view;
     }
-
-    public boolean onBackPressed(){
-        BackPressedListener currentFragment = mSimpleFragment;
-        if (currentFragment != null) {
-            return currentFragment.onBackPressed();
-        }
-        return false;
-    }
-
 }
